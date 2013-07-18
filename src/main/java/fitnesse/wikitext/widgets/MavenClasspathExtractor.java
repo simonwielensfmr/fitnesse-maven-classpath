@@ -19,8 +19,10 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
 import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.repository.RepositoryPolicy;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -56,7 +58,7 @@ public class MavenClasspathExtractor {
 
     public List<String> extractClasspathEntries(File pomFile, String scope) throws MavenClasspathExtractionException {
 
-        try {
+        try {        	
             MavenExecutionRequest mavenExecutionRequest = mavenConfiguration();
             mavenExecutionRequest.setBaseDirectory(pomFile.getParentFile());
             mavenExecutionRequest.setPom(pomFile);
@@ -95,7 +97,8 @@ public class MavenClasspathExtractor {
     	try {
 			MavenExecutionRequestPopulator executionRequestPopulator = lookup(MavenExecutionRequestPopulator.class);
 	        MavenExecutionRequestPopulator populator = lookup(MavenExecutionRequestPopulator.class);
-	
+	        
+	        mavenExecutionRequest.setUpdateSnapshots(true);
 	    	mavenExecutionRequest.setInteractiveMode(false);
 	    	
 	    	mavenExecutionRequest.setSystemProperties(System.getProperties());
@@ -172,7 +175,6 @@ public class MavenClasspathExtractor {
     public ProjectBuildingResult buildProject(File mavenProject, MavenExecutionRequest mavenExecutionRequest) throws ProjectBuildingException, ComponentLookupException {
         ProjectBuilder projectBuilder = lookup(ProjectBuilder.class);
         ProjectBuildingRequest projectBuildingRequest = mavenExecutionRequest.getProjectBuildingRequest();
-
         RepositorySystemSession repositorySystemSession = buildRepositorySystemSession(mavenExecutionRequest);
 
         projectBuildingRequest.setRepositorySession(repositorySystemSession);
